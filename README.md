@@ -1,28 +1,30 @@
 VEVideoEditor
 =============
 
-Video Editor for iOS based from AV Foundation Framework
+Video Editor for iOS based from AV Foundation Framework.
 
 Features
-    - Add image layer to video
-    - Merge multiple video
-    - Change audio to video
+  * Add image layer to video
+  * Merge multiple video
+  * Change audio to video
 
 ----------------------------------------------------------
 
-Installation
-1) Add All of Files in "/model" to your project
-2) Add Above framework to your project
-    - AVFoundation.framework
-    - CoreMedia.framework
-    - CoreVideo.framework
-    - MobileCoreServices.framework
-    - MediaPlayer.framework
+Installation.
+
+1. Add All of Files in "/model" to your project.
+2. Add Above framework to your project.
+  * AVFoundation.framework
+  * CoreMedia.framework
+  * CoreVideo.framework
+  * MobileCoreServices.framework
+  * MediaPlayer.framework
 
 ----------------------------------------------------------
 
 How to use
 
+```
 #include "VE.h"
 
 //init VEVideoEditor with video file
@@ -42,6 +44,7 @@ component.duration = videoEditor.duration;
 
 //Export video
 [videoEditor exportToURL:url];
+```
 
 ----------------------------------------------------------
 
