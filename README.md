@@ -12,7 +12,7 @@ Features
 
 Installation.
 
-1. Add All of Files in "/model" to your project.
+1. Add All of Files in "VideoEditor/model" to your project.
 2. Add Above framework to your project.
   * AVFoundation.framework
   * CoreMedia.framework
