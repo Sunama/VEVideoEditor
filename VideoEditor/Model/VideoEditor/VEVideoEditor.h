@@ -27,6 +27,8 @@
     BOOL isProcessing;
     long currentFrame;
     double previewTime;
+    
+    AVAssetWriter *assetWriter;
 }
 
 @property (nonatomic, strong) id <VEVideoEditorDelegate> delegate;
@@ -42,6 +44,8 @@
 @property (readonly) BOOL isProcessing;
 @property (readonly) long currentFrame;
 @property (readonly) double previewTime;
+
+@property (nonatomic, strong) AVAssetWriter *assetWriter;
 
 - (id)initWithURL:(NSURL *)url;
 - (id)initWithPath:(NSString *)path;

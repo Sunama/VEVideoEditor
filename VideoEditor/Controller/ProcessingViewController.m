@@ -40,7 +40,10 @@
 - (void)viewDidAppear:(BOOL)animated {
     videoEditor.delegate = self;
     startDate = [NSDate date];
-    [videoEditor exportToURL:[Utilities urlDocumentsPath:[NSString stringWithFormat:@"%.0f.mov", [NSDate timeIntervalSinceReferenceDate]]]];
+    NSString *fileName = [NSString stringWithFormat:@"%.0f.mov", [NSDate timeIntervalSinceReferenceDate]];
+    [videoEditor exportToURL:[Utilities urlDocumentsPath:fileName]];
+    
+    NSLog(@"Export to file name: %@", fileName);
 }
 
 - (void)didReceiveMemoryWarning

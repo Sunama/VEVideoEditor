@@ -17,7 +17,7 @@
 
 @implementation VEVideoEditor
 
-@synthesize delegate, previewViewController, videoComposition, audioComposition, encode, size, duration, fps, isProcessing, currentFrame, previewTime;
+@synthesize delegate, previewViewController, videoComposition, audioComposition, encode, size, duration, fps, isProcessing, currentFrame, previewTime, assetWriter;
 
 - (id)init {
     self = [super init];
@@ -74,7 +74,7 @@
     isProcessing =  YES;
     
     NSError *error = nil;
-    AVAssetWriter *assetWriter = [[AVAssetWriter alloc] initWithURL:url fileType:AVFileTypeQuickTimeMovie error:&error];
+    assetWriter = [[AVAssetWriter alloc] initWithURL:url fileType:AVFileTypeQuickTimeMovie error:&error];
     NSParameterAssert(assetWriter);
     assetWriter.shouldOptimizeForNetworkUse = NO;
     
@@ -187,6 +187,7 @@
                 if (isFinishAudio) {
                     isProcessing = NO;
                     [assetWriter endSessionAtSourceTime:CMTimeMakeWithSeconds(duration, fps)];
+                    
                     [assetWriter finishWritingWithCompletionHandler:^ {
                         dispatch_async(dispatch_get_main_queue(), ^{
                             [delegate videoEditor:self exportFinishWithError:nil];

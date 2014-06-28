@@ -177,13 +177,16 @@
         return CGImageCreateCopy(previousImage);
     }
     else {
-        CGImageRelease(previousImage);
-        
         while (reader.status != AVAssetReaderStatusReading) {
             usleep(0.1f);
         }
         
         CMSampleBufferRef sample = [readerOutput copyNextSampleBuffer];
+        
+        if (sample == NULL)
+            return CGImageCreateCopy(previousImage);
+        
+        CGImageRelease(previousImage);
         
         CMTime presentationTime = CMSampleBufferGetPresentationTimeStamp(sample);
         currentTime = CMTimeGetSeconds(presentationTime);
