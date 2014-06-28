@@ -8,7 +8,7 @@
 
 #import "MainViewController.h"
 #import "EditingViewController.h"
-#import "VideoEditor.h"
+#import "VE.h"
 
 @interface MainViewController ()
 

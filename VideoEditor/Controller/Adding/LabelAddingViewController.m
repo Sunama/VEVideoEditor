@@ -7,7 +7,7 @@
 //
 
 #import "LabelAddingViewController.h"
-#import "VideoEditor.h"
+#import "VE.h"
 #import "Utilities.h"
 
 @interface LabelAddingViewController ()

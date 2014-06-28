@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "VideoEditor.h"
+#import "VE.h"
 
 @interface ProcessingViewController : UIViewController <VEVideoEditorDelegate, UIAlertViewDelegate>  {
     IBOutlet UIProgressView *progressView;

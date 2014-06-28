@@ -75,7 +75,7 @@
 		046D2A10178E745900912AC1 /* VEOverlayVideoEditor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VEOverlayVideoEditor.m; sourceTree = "<group>"; };
 		046D2A11178E745900912AC1 /* VEVideoEditor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VEVideoEditor.h; sourceTree = "<group>"; };
 		046D2A12178E745900912AC1 /* VEVideoEditor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VEVideoEditor.m; sourceTree = "<group>"; };
-		046D2A13178E745900912AC1 /* VideoEditor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoEditor.h; sourceTree = "<group>"; };
+		046D2A13178E745900912AC1 /* VE.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VE.h; sourceTree = "<group>"; };
 		046D2A20178E76A200912AC1 /* MainViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainViewController.h; sourceTree = "<group>"; };
 		046D2A21178E76A200912AC1 /* MainViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainViewController.m; sourceTree = "<group>"; };
 		046D2A23178E76C700912AC1 /* EditingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditingViewController.h; sourceTree = "<group>"; };
@@ -153,7 +153,7 @@
 				046D2A0C178E745900912AC1 /* VEUtilities.h */,
 				046D2A0D178E745900912AC1 /* VEUtilities.m */,
 				046D2A0E178E745900912AC1 /* VideoEditor */,
-				046D2A13178E745900912AC1 /* VideoEditor.h */,
+				046D2A13178E745900912AC1 /* VE.h */,
 			);
 			path = Model;
 			sourceTree = "<group>";
