@@ -24,6 +24,13 @@
     
     double trimFromTime;
     double trimDuration;
+    
+    BOOL isSetInfo;
+    size_t kBytesPerRow;
+    size_t kWidth;
+    size_t kHeight;
+    
+    CGColorSpaceRef kColorSpace;
 }
 
 @property (nonatomic, readonly) UIImageOrientation orientation;

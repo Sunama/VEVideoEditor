@@ -18,6 +18,10 @@
     VEVideoEditor *videoEditor;
     NSDate *startDate;
     NSInteger progressCount;
+    
+    NSMutableArray *memories;
+    float sumUsedMemory;
+    float samplingTime;
 }
 
 @property (nonatomic, retain) VEVideoEditor *videoEditor;

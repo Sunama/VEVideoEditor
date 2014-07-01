@@ -11,6 +11,7 @@
 #import "VEVideoEditor.h"
 #import "VEUtilities.h"
 #import "VEVideoTrack.h"
+#import "VETimer.h"
 
 @implementation VEVideoComposition
 
@@ -291,6 +292,8 @@
         i++;
     }
     
+    [editor.drawImageTimer startProcess];
+    
     UIGraphicsBeginImageContext(editor.size);
     CGContextRef context = UIGraphicsGetCurrentContext();
     
@@ -307,6 +310,8 @@
     for (i = 0; i < [nextComponents count]; i++) {
         CGImageRelease(images[i]);
     }
+    
+    [editor.drawImageTimer endProcess];
     
     return image;
 }

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>A51469A4-C36D-4113-9F49-3ECD82C42233</string>
+	<key>IDESourceControlProjectName</key>
+	<string>VideoEditor</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>EA8E9AD3-F99A-4AFD-88BA-2BC3A9914901</key>
+		<string>https://github.com/Sunama/VEVideoEditor.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>VideoEditor.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>EA8E9AD3-F99A-4AFD-88BA-2BC3A9914901</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/Sunama/VEVideoEditor.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>110</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>EA8E9AD3-F99A-4AFD-88BA-2BC3A9914901</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>EA8E9AD3-F99A-4AFD-88BA-2BC3A9914901</string>
+			<key>IDESourceControlWCCName</key>
+			<string>VideoEditor</string>
+		</dict>
+	</array>
+</dict>
+</plist>
