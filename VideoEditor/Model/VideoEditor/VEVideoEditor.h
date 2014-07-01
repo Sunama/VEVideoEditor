@@ -11,7 +11,7 @@
 
 #import "VEVideoEditorDelegate.h"
 
-@class VEPreviewViewController, VEVideoComposition, VEAudioComposition, VEVideoComponent;
+@class VEPreviewViewController, VEVideoComposition, VEAudioComposition, VEVideoComponent, VETimer;
 
 @interface VEVideoEditor : NSObject {
     id <VEVideoEditorDelegate> delegate;
@@ -27,6 +27,16 @@
     BOOL isProcessing;
     long currentFrame;
     double previewTime;
+    
+    AVAssetWriter *assetWriter;
+    NSOperationQueue *videoEncodingOperationQueue;
+    CVPixelBufferRef buffers[30];
+    
+    VETimer *decodingTimer;
+    VETimer *encodingTimer;
+    VETimer *convertingImageTimer;
+    VETimer *rotateImageTimer;
+    VETimer *drawImageTimer;
 }
 
 @property (nonatomic, strong) id <VEVideoEditorDelegate> delegate;
@@ -42,6 +52,14 @@
 @property (readonly) BOOL isProcessing;
 @property (readonly) long currentFrame;
 @property (readonly) double previewTime;
+
+@property (nonatomic, strong) AVAssetWriter *assetWriter;
+
+@property (nonatomic, strong) VETimer *decodingTimer;
+@property (nonatomic, strong) VETimer *encodingTimer;
+@property (nonatomic, strong) VETimer *convertingImageTimer;
+@property (nonatomic, strong) VETimer *rotateImageTimer;
+@property (nonatomic, strong) VETimer *drawImageTimer;
 
 - (id)initWithURL:(NSURL *)url;
 - (id)initWithPath:(NSString *)path;

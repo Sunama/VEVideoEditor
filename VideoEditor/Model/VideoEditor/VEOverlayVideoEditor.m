@@ -99,7 +99,7 @@
     isProcessing =  YES;
     
     NSError *error = nil;
-    AVAssetWriter *assetWriter = [[AVAssetWriter alloc] initWithURL:url fileType:AVFileTypeQuickTimeMovie error:&error];
+    assetWriter = [[AVAssetWriter alloc] initWithURL:url fileType:AVFileTypeQuickTimeMovie error:&error];
     NSParameterAssert(assetWriter);
     assetWriter.shouldOptimizeForNetworkUse = NO;
     

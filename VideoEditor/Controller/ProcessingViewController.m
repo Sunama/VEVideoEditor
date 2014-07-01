@@ -35,12 +35,16 @@
 	// Do any additional setup after loading the view.
     
     informationAlertView = [[UIAlertView alloc] initWithTitle:@"VideoEditor" message:nil delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:nil];
+    memories = [NSMutableArray array];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     videoEditor.delegate = self;
     startDate = [NSDate date];
-    [videoEditor exportToURL:[Utilities urlDocumentsPath:[NSString stringWithFormat:@"%.0f.mov", [NSDate timeIntervalSinceReferenceDate]]]];
+    NSString *fileName = [NSString stringWithFormat:@"%.0f.mov", [NSDate timeIntervalSinceReferenceDate]];
+    [videoEditor exportToURL:[Utilities urlDocumentsPath:fileName]];
+    
+    NSLog(@"Export to file name: %@", fileName);
 }
 
 - (void)didReceiveMemoryWarning
@@ -61,7 +65,9 @@
         informationAlertView.message = [NSString stringWithFormat:@"Error to export video with reason: %@", error];
     }
     else {
-        informationAlertView.message = [NSString stringWithFormat:@"Export finished with time: %@\nVideo Size: %.0f x %.0f\nUsed Memory: %.4f mb\nFree Memory: %.4f mb", [Utilities minutesWithSeconds:[[NSDate date] timeIntervalSinceDate:startDate]], videoEditor.size.width, videoEditor.size.height, [self usedMemory] / (1024.0f * 1024.0f), [self get_free_memory] / (1024.0f * 1024.0f)];
+        float time = [startDate timeIntervalSinceNow] * -1000.0;
+        
+        informationAlertView.message = [NSString stringWithFormat:@"Export finished with time: %.0f ms\nVideo Size: %.0f x %.0f\nUsed Memory: %.4f mb\nFree Memory: %.4f mb", time, videoEditor.size.width, videoEditor.size.height, sumUsedMemory / samplingTime, [self get_free_memory] / (1024.0f * 1024.0f)];
     }
     
     [informationAlertView show];
@@ -76,6 +82,10 @@
         
         progressCount = 0;
     }
+    
+    //[memories addObject:[NSNumber numberWithFloat:[self usedMemory] / (1024.0f * 1024.0f)]];
+    sumUsedMemory += [self usedMemory] / (1024.0f * 1024.0f);
+    samplingTime++;
 }
 
 #pragma mark -

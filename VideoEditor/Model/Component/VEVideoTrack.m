@@ -10,6 +10,7 @@
 #import "VEUtilities.h"
 #import "VEVideoEditor.h"
 #import "VEVideoComposition.h"
+#import "VETimer.h"
 
 @implementation VEVideoTrack
 
@@ -63,6 +64,8 @@
             view = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, track.naturalSize.width, track.naturalSize.height)];
             size = track.naturalSize;
         }
+        
+        kColorSpace = CGColorSpaceCreateDeviceRGB();
     }
     
     return self;
@@ -177,7 +180,7 @@
         return CGImageCreateCopy(previousImage);
     }
     else {
-        CGImageRelease(previousImage);
+        [composition.editor.decodingTimer startProcess];
         
         while (reader.status != AVAssetReaderStatusReading) {
             usleep(0.1f);
@@ -185,36 +188,24 @@
         
         CMSampleBufferRef sample = [readerOutput copyNextSampleBuffer];
         
+        [composition.editor.decodingTimer endProcess];
+        [composition.editor.convertingImageTimer startProcess];
+        
+        if (sample == NULL)
+            return CGImageCreateCopy(previousImage);
+        
+        CGImageRelease(previousImage);
+        
         CMTime presentationTime = CMSampleBufferGetPresentationTimeStamp(sample);
         currentTime = CMTimeGetSeconds(presentationTime);
         
-        /* Composite over video frame */
-        CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(sample);
-        
-        // Lock the image buffer
-        CVPixelBufferLockBaseAddress(imageBuffer, 0);
-        
-        // Get information about the image
-        uint8_t *baseAddress = (uint8_t *)CVPixelBufferGetBaseAddress(imageBuffer);
-        size_t bytesPerRow = CVPixelBufferGetBytesPerRow(imageBuffer);
-        size_t width = CVPixelBufferGetWidth(imageBuffer);
-        size_t height = CVPixelBufferGetHeight(imageBuffer);
-        
-        // Create a CGImageRef from the CVImageBufferRef
-        CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
-        CGContextRef context = CGBitmapContextCreate(baseAddress, width, height, 8, bytesPerRow, colorSpace, kCGBitmapByteOrder32Little | kCGImageAlphaPremultipliedFirst);
-        
-        previousImage = CGBitmapContextCreateImage(context);
-        
-        CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
-        
-        // We release some components
-        CGContextRelease(context);
-        CGColorSpaceRelease(colorSpace);
-        
-        /* End composite */
+        //Change convertion method
+        [self convertSampleBufferToCGImageByDrawToCGImage:sample];
         
         CFRelease(sample);
+        
+        [composition.editor.convertingImageTimer endProcess];
+        [composition.editor.rotateImageTimer startProcess];
         
         if (resultOrientation == UIImageOrientationUp) {
             previousImage = [VEUtilities imageByRotatingImage:previousImage fromImageOrientation:UIImageOrientationLeftMirrored];
@@ -228,6 +219,8 @@
         else if (resultOrientation == UIImageOrientationRight) {
             previousImage = [VEUtilities imageByRotatingImage:previousImage fromImageOrientation:UIImageOrientationDownMirrored];
         }
+        
+        [composition.editor.rotateImageTimer endProcess];
         
         return CGImageCreateCopy(previousImage);
     }
@@ -259,13 +252,17 @@
         
         // Get information about the image
         uint8_t *baseAddress = (uint8_t *)CVPixelBufferGetBaseAddress(imageBuffer);
-        size_t bytesPerRow = CVPixelBufferGetBytesPerRow(imageBuffer);
-        size_t width = CVPixelBufferGetWidth(imageBuffer);
-        size_t height = CVPixelBufferGetHeight(imageBuffer);
+        
+        if (!isSetInfo) {
+            isSetInfo = YES;
+            
+            kBytesPerRow = CVPixelBufferGetBytesPerRow(imageBuffer);
+            kWidth = CVPixelBufferGetWidth(imageBuffer);
+            kHeight = CVPixelBufferGetHeight(imageBuffer);
+        }
         
         // Create a CGImageRef from the CVImageBufferRef
-        CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
-        CGContextRef context = CGBitmapContextCreate(baseAddress, width, height, 8, bytesPerRow, colorSpace, kCGBitmapByteOrder32Little | kCGImageAlphaPremultipliedFirst);
+        CGContextRef context = CGBitmapContextCreate(baseAddress, kWidth, kHeight, 8, kBytesPerRow, kColorSpace, kCGBitmapByteOrder32Little | kCGImageAlphaPremultipliedFirst);
         
         previousImage = CGBitmapContextCreateImage(context);
         
@@ -273,7 +270,6 @@
         
         // We release some components
         CGContextRelease(context);
-        CGColorSpaceRelease(colorSpace);
         
         /* End composite */
         
@@ -299,6 +295,118 @@
     else {
         return NO;
     }
+}
+
+- (void)dispose {
+    [super dispose];
+    
+    CGColorSpaceRelease(kColorSpace);
+}
+
+#pragma mark - Incrementation of Efficiecy
+
+- (void)convertSampleBufferToCGImageByDrawToCGImage:(CMSampleBufferRef)sample {
+    /* Composite over video frame */
+    CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(sample);
+    
+    // Lock the image buffer
+    CVPixelBufferLockBaseAddress(imageBuffer, 0);
+    
+    // Get information about the image
+    uint8_t *baseAddress = (uint8_t *)CVPixelBufferGetBaseAddress(imageBuffer);
+    
+    size_t bytesPerRow = CVPixelBufferGetBytesPerRow(imageBuffer);
+    size_t width = CVPixelBufferGetWidth(imageBuffer);
+    size_t height = CVPixelBufferGetHeight(imageBuffer);
+    
+    // Create a CGImageRef from the CVImageBufferRef
+    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+    CGContextRef context = CGBitmapContextCreate(baseAddress, width, height, 8, bytesPerRow, colorSpace, kCGBitmapByteOrder32Little | kCGImageAlphaPremultipliedFirst);
+    
+    previousImage = CGBitmapContextCreateImage(context);
+    
+    CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
+    
+    // We release some components
+    CGContextRelease(context);
+    
+    /* End composite */
+}
+
+- (void)convertSampleBufferToCGImageByDeclairSomeVariableToClass:(CMSampleBufferRef)sample {
+    /* Composite over video frame */
+    CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(sample);
+    
+    // Lock the image buffer
+    CVPixelBufferLockBaseAddress(imageBuffer, 0);
+    
+    // Get information about the image
+    uint8_t *baseAddress = (uint8_t *)CVPixelBufferGetBaseAddress(imageBuffer);
+    
+    if (!isSetInfo) {
+        isSetInfo = YES;
+        
+        kBytesPerRow = CVPixelBufferGetBytesPerRow(imageBuffer);
+        kWidth = CVPixelBufferGetWidth(imageBuffer);
+        kHeight = CVPixelBufferGetHeight(imageBuffer);
+    }
+    
+    // Create a CGImageRef from the CVImageBufferRef
+    CGContextRef context = CGBitmapContextCreate(baseAddress, kWidth, kHeight, 8, kBytesPerRow, kColorSpace, kCGBitmapByteOrder32Little | kCGImageAlphaPremultipliedFirst);
+    
+    previousImage = CGBitmapContextCreateImage(context);
+    
+    CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
+    
+    // We release some components
+    CGContextRelease(context);
+    
+    /* End composite */
+}
+
+- (void)convertSampleBufferToCGImageByCIImageMethod:(CMSampleBufferRef)sample {
+    CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sample);
+    CIImage *ciImage = [CIImage imageWithCVPixelBuffer:pixelBuffer];
+    
+    CIContext *temporaryContext = [CIContext contextWithOptions:nil];
+    previousImage = [temporaryContext createCGImage:ciImage fromRect:CGRectMake(0, 0, CVPixelBufferGetWidth(pixelBuffer), CVPixelBufferGetHeight(pixelBuffer))];
+}
+
+- (void)convertSampleBufferToCGImageByStandardMethod:(CMSampleBufferRef)sample {
+    CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sample);
+    
+    CVPixelBufferLockBaseAddress(pixelBuffer, 0);
+    
+    int w = CVPixelBufferGetWidth(pixelBuffer);
+    int h = CVPixelBufferGetHeight(pixelBuffer);
+    int r = CVPixelBufferGetBytesPerRow(pixelBuffer);
+    int bytesPerPixel = r/w;
+    
+    unsigned char *buffer = CVPixelBufferGetBaseAddress(pixelBuffer);
+    
+    UIGraphicsBeginImageContext(CGSizeMake(w, h));
+    
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    
+    unsigned char *data = CGBitmapContextGetData(context);
+    if (data != NULL) {
+        int maxY = h;
+        for(int y = 0; y<maxY; y++) {
+            for(int x = 0; x<w; x++) {
+                int offset = bytesPerPixel*((w*y)+x);
+                data[offset] = buffer[offset];     // R
+                data[offset+1] = buffer[offset+1]; // G
+                data[offset+2] = buffer[offset+2]; // B
+                data[offset+3] = buffer[offset+3]; // A
+            }
+        }
+    }
+    
+    previousImage = CGBitmapContextCreateImage(context);
+    
+    CVPixelBufferUnlockBaseAddress(pixelBuffer, 0);
+    
+    CGContextRelease(context);
 }
 
 @end

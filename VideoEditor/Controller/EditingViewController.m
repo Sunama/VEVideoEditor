@@ -117,7 +117,7 @@
         [self performSegueWithIdentifier:@"LabelAddingSegue" sender:self];
     }
     else if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:@"Add Image"]) {
-        
+        [self performSegueWithIdentifier:@"ImageAddingSegue" sender:self];
     }
 }
 

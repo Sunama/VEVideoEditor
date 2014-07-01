@@ -41,6 +41,8 @@
 		884CC5B3171FA86A0097A46E /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 884CC5B2171FA86A0097A46E /* AVFoundation.framework */; };
 		884CC5B5171FA86F0097A46E /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 884CC5B4171FA86F0097A46E /* CoreMedia.framework */; };
 		884CC5B7171FA8740097A46E /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 884CC5B6171FA8740097A46E /* CoreVideo.framework */; };
+		E713179E195FD78F00898FA4 /* CoreImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E713179D195FD78F00898FA4 /* CoreImage.framework */; };
+		E718897F19603FDB0089907E /* VETimer.m in Sources */ = {isa = PBXBuildFile; fileRef = E718897E19603FDB0089907E /* VETimer.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -103,6 +105,9 @@
 		884CC5B2171FA86A0097A46E /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		884CC5B4171FA86F0097A46E /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		884CC5B6171FA8740097A46E /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
+		E713179D195FD78F00898FA4 /* CoreImage.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreImage.framework; path = System/Library/Frameworks/CoreImage.framework; sourceTree = SDKROOT; };
+		E718897D19603FDB0089907E /* VETimer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VETimer.h; sourceTree = "<group>"; };
+		E718897E19603FDB0089907E /* VETimer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VETimer.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -110,6 +115,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E713179E195FD78F00898FA4 /* CoreImage.framework in Frameworks */,
 				0451DFF7179261EE0085877C /* MediaPlayer.framework in Frameworks */,
 				046D2A2B178E9A8100912AC1 /* MobileCoreServices.framework in Frameworks */,
 				884CC5B7171FA8740097A46E /* CoreVideo.framework in Frameworks */,
@@ -150,10 +156,12 @@
 				046D29F9178E745800912AC1 /* Component */,
 				046D2A00178E745800912AC1 /* Composition */,
 				046D2A07178E745900912AC1 /* PreviewView */,
-				046D2A0C178E745900912AC1 /* VEUtilities.h */,
-				046D2A0D178E745900912AC1 /* VEUtilities.m */,
 				046D2A0E178E745900912AC1 /* VideoEditor */,
 				046D2A13178E745900912AC1 /* VE.h */,
+				046D2A0C178E745900912AC1 /* VEUtilities.h */,
+				046D2A0D178E745900912AC1 /* VEUtilities.m */,
+				E718897D19603FDB0089907E /* VETimer.h */,
+				E718897E19603FDB0089907E /* VETimer.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -243,6 +251,7 @@
 		884CC58E171FA85C0097A46E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				E713179D195FD78F00898FA4 /* CoreImage.framework */,
 				0451DFF6179261EE0085877C /* MediaPlayer.framework */,
 				046D2A2A178E9A8100912AC1 /* MobileCoreServices.framework */,
 				884CC5B6171FA8740097A46E /* CoreVideo.framework */,
@@ -369,6 +378,7 @@
 				046D2A25178E76C700912AC1 /* EditingViewController.m in Sources */,
 				046D2A28178E76D700912AC1 /* ProcessingViewController.m in Sources */,
 				045DC5A3178FBADA00CCAE18 /* Utilities.m in Sources */,
+				E718897F19603FDB0089907E /* VETimer.m in Sources */,
 				045DC5A7178FBEA400CCAE18 /* LabelAddingViewController.m in Sources */,
 				045DC5AA178FBEB900CCAE18 /* ImageAddingViewController.m in Sources */,
 				0451DFF517925F760085877C /* LibraryViewController.m in Sources */,

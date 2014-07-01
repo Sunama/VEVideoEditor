@@ -14,10 +14,11 @@
 #import "VEUtilities.h"
 #import "VEVideoTrack.h"
 #import "VEAudioComponent.h"
+#import "VETimer.h"
 
 @implementation VEVideoEditor
 
-@synthesize delegate, previewViewController, videoComposition, audioComposition, encode, size, duration, fps, isProcessing, currentFrame, previewTime;
+@synthesize delegate, previewViewController, videoComposition, audioComposition, encode, size, duration, fps, isProcessing, currentFrame, previewTime, assetWriter, decodingTimer, encodingTimer, convertingImageTimer, rotateImageTimer, drawImageTimer;
 
 - (id)init {
     self = [super init];
@@ -30,6 +31,12 @@
         videoComposition.editor = self;
         audioComposition.editor = self;
         previewViewController.editor = self;
+        
+        encodingTimer = [[VETimer alloc] init];
+        decodingTimer = [[VETimer alloc] init];
+        convertingImageTimer = [[VETimer alloc] init];
+        rotateImageTimer = [[VETimer alloc] init];
+        drawImageTimer = [[VETimer alloc] init];
     }
     
     return self;
@@ -70,11 +77,15 @@
 }
 
 - (void)exportToURL:(NSURL *)url {
+    [self exportStandardMethodToURL:url];
+}
+
+- (void)exportStandardMethodToURL:(NSURL *)url {
     [VEUtilities removeFileAtURL:url];
     isProcessing =  YES;
     
     NSError *error = nil;
-    AVAssetWriter *assetWriter = [[AVAssetWriter alloc] initWithURL:url fileType:AVFileTypeQuickTimeMovie error:&error];
+    assetWriter = [[AVAssetWriter alloc] initWithURL:url fileType:AVFileTypeQuickTimeMovie error:&error];
     NSParameterAssert(assetWriter);
     assetWriter.shouldOptimizeForNetworkUse = NO;
     
@@ -159,6 +170,8 @@
             CGImageRef image = [videoComposition nextFrameImage];
             CVPixelBufferRef buffer = [VEUtilities pixelBufferFromCGImage:image];
             
+            [encodingTimer startProcess];
+            
             if (![adaptor appendPixelBuffer:buffer withPresentationTime:CMTimeMake(currentFrame, fps)]) {
                 isProcessing = NO;
                 NSMutableDictionary *info = [NSMutableDictionary dictionary];
@@ -172,6 +185,8 @@
             
             CGImageRelease(image);
             CVPixelBufferRelease(buffer);
+            
+            [encodingTimer endProcess];
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 [delegate videoEditor:self progressTo:currentFrame / (duration * fps)];
@@ -187,6 +202,44 @@
                 if (isFinishAudio) {
                     isProcessing = NO;
                     [assetWriter endSessionAtSourceTime:CMTimeMakeWithSeconds(duration, fps)];
+                    
+                    [assetWriter finishWritingWithCompletionHandler:^ {
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [delegate videoEditor:self exportFinishWithError:nil];
+                            
+                            NSLog(@"Decoding = %.0f, %.0f", decodingTimer.averageTime, decodingTimer.totalTime);
+                            NSLog(@"Encoding = %.0f, %.0f", encodingTimer.averageTime, encodingTimer.totalTime);
+                            NSLog(@"Converting Image = %.0f, %.0f", convertingImageTimer.averageTime, convertingImageTimer.totalTime);
+                            NSLog(@"Rotate Image = %.0f, %.0f", rotateImageTimer.averageTime, rotateImageTimer.totalTime);
+                            NSLog(@"Draw Image = %.0f, %.0f", drawImageTimer.averageTime, drawImageTimer.totalTime);
+                        });
+                    }];
+                }
+                
+                break;
+            }
+        }
+    }];
+    
+    //Write Audio
+    dispatch_queue_t audioQueue = dispatch_queue_create("Wite Audio", NULL);
+    
+    [assetWriterAudioInput requestMediaDataWhenReadyOnQueue:audioQueue usingBlock:^ {
+        while(assetWriterAudioInput.readyForMoreMediaData)
+        {
+            CMSampleBufferRef nextBuffer = [audioComposition nextSampleBuffer];
+            if(nextBuffer != NULL) {
+                //append buffer
+                [assetWriterAudioInput appendSampleBuffer:nextBuffer];
+            }
+            else {
+                [assetWriterAudioInput markAsFinished];
+                
+                isFinishAudio = YES;
+                
+                if (isFinishVideo) {
+                    isProcessing = NO;
+                    [assetWriter endSessionAtSourceTime:CMTimeMakeWithSeconds(duration, fps)];
                     [assetWriter finishWritingWithCompletionHandler:^ {
                         dispatch_async(dispatch_get_main_queue(), ^{
                             [delegate videoEditor:self exportFinishWithError:nil];
@@ -195,6 +248,184 @@
                 }
                 
                 break;
+            }
+        }
+    }];
+}
+
+- (void)exportMultiThreadMethodToURL:(NSURL *)url {
+    [VEUtilities removeFileAtURL:url];
+    isProcessing =  YES;
+    
+    NSError *error = nil;
+    assetWriter = [[AVAssetWriter alloc] initWithURL:url fileType:AVFileTypeQuickTimeMovie error:&error];
+    NSParameterAssert(assetWriter);
+    assetWriter.shouldOptimizeForNetworkUse = NO;
+    
+    //Video
+    if ([encode length] == 0) {
+        encode = AVVideoCodecH264;
+    }
+    
+    NSDictionary *videoSettings = [NSDictionary dictionaryWithObjectsAndKeys:
+                                   encode, AVVideoCodecKey,
+                                   [NSNumber numberWithInt:size.width], AVVideoWidthKey,
+                                   [NSNumber numberWithInt:size.height], AVVideoHeightKey,
+                                   nil];
+    
+    AVAssetWriterInput *assetWriterVideoInput = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeVideo outputSettings:videoSettings];
+    assetWriterVideoInput.expectsMediaDataInRealTime = YES;
+    
+    /*
+     if (orientation == UIImageOrientationUp) {
+     assetWriterVideoInput.transform = CGAffineTransformMake(0, 1.0, -1.0, 0, size.width, 0);
+     }
+     else if (orientation == UIImageOrientationDown) {
+     assetWriterVideoInput.transform = CGAffineTransformMake(0, -1.0, 1.0, 0, 0, size.width);
+     }
+     else if (orientation == UIImageOrientationLeft) {
+     assetWriterVideoInput.transform = CGAffineTransformMake(1.0, 0, 0, 1.0, 0, 0);
+     }
+     else if (orientation == UIImageOrientationRight) {
+     assetWriterVideoInput.transform = CGAffineTransformMake(-1.0, 0, 0, -1.0, size.width, size.height);
+     }
+     */
+    
+    NSDictionary *bufferAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                                      [NSNumber numberWithInt:kCVPixelFormatType_32BGRA], kCVPixelBufferPixelFormatTypeKey, nil];
+    
+    AVAssetWriterInputPixelBufferAdaptor *adaptor = [AVAssetWriterInputPixelBufferAdaptor assetWriterInputPixelBufferAdaptorWithAssetWriterInput:assetWriterVideoInput sourcePixelBufferAttributes:bufferAttributes];
+    
+    NSParameterAssert(assetWriterVideoInput);
+    NSParameterAssert([assetWriter canAddInput:assetWriterVideoInput]);
+    [assetWriter addInput:assetWriterVideoInput];
+    
+    //Audio
+    AudioChannelLayout channelLayout;
+    memset(&channelLayout, 0, sizeof(AudioChannelLayout));
+    channelLayout.mChannelLayoutTag = kAudioChannelLayoutTag_Stereo;
+    
+    NSDictionary *audioSettings = [NSDictionary dictionaryWithObjectsAndKeys:
+                                   [NSNumber numberWithInt: kAudioFormatMPEG4AAC], AVFormatIDKey,
+                                   [NSNumber numberWithInt:2], AVNumberOfChannelsKey,
+                                   [NSNumber numberWithFloat:44100.0], AVSampleRateKey,
+                                   [NSData dataWithBytes:&channelLayout length: sizeof(AudioChannelLayout) ], AVChannelLayoutKey,
+                                   [NSNumber numberWithInt:64000], AVEncoderBitRateKey,
+                                   nil];
+    AVAssetWriterInput *assetWriterAudioInput = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeAudio outputSettings:audioSettings];
+    NSParameterAssert(assetWriterAudioInput);
+    NSParameterAssert([assetWriter canAddInput:assetWriterAudioInput]);
+    [assetWriter addInput:assetWriterAudioInput];
+    
+    if (![assetWriter startWriting]) {
+        isProcessing = NO;
+        NSMutableDictionary *info = [NSMutableDictionary dictionary];
+        [info setValue:[NSString stringWithFormat:@"Cannot to start writing for reason : %@", error.localizedDescription] forKey:NSLocalizedDescriptionKey];
+        NSError *error = [[NSError alloc] initWithDomain:@"VideoEditor" code:1 userInfo:info];
+        
+        [delegate videoEditor:self exportFinishWithError:error];
+    }
+    [assetWriter startSessionAtSourceTime:kCMTimeZero];
+    
+    [videoComposition beginExport];
+    [audioComposition beginExport];
+    
+    currentFrame = 0;
+    __block BOOL isFinishVideo = NO;
+    __block BOOL isFinishAudio = NO;
+    
+    videoEncodingOperationQueue = [[NSOperationQueue alloc] init];
+    videoEncodingOperationQueue.name = @"Video Encoding";
+    
+    __block int decodePointer = 0;
+    __block int decodeCurrentFrame = 0;
+    __block int encodePointer = 0;
+    __block int encodeCurrentFrame = 0;
+    
+    [videoEncodingOperationQueue addOperationWithBlock:^{
+        while (decodeCurrentFrame < duration * fps) {
+            while (decodeCurrentFrame - encodeCurrentFrame > 29) {
+                usleep(1);
+            }
+            
+            CGImageRef image = [videoComposition nextFrameImage];
+            buffers[decodePointer] = [VEUtilities pixelBufferFromCGImage:image];
+            
+            CGImageRelease(image);
+            
+            currentFrame++;
+            decodeCurrentFrame++;
+            decodePointer++;
+            if (decodePointer > 29) {
+                decodePointer = 0;
+            }
+        }
+    }];
+    
+    //Write Video
+    dispatch_queue_t videoQueue = dispatch_queue_create("Wite Video", NULL);
+    
+    [assetWriterVideoInput requestMediaDataWhenReadyOnQueue:videoQueue usingBlock:^{
+        
+        while ([assetWriterVideoInput isReadyForMoreMediaData]) {
+            while (encodeCurrentFrame >= decodeCurrentFrame && encodeCurrentFrame < duration * fps) {
+                usleep(1);
+            }
+            
+            [encodingTimer startProcess];
+            
+            CVPixelBufferRef buffer = buffers[encodePointer];
+            
+            if (![adaptor appendPixelBuffer:buffer withPresentationTime:CMTimeMake(encodeCurrentFrame, fps)]) {
+                isProcessing = NO;
+                NSMutableDictionary *info = [NSMutableDictionary dictionary];
+                [info setValue:[NSString stringWithFormat:@"Cannon append pixel buffer at frame %d (%.2fs)", encodeCurrentFrame, CMTimeGetSeconds(CMTimeMake(encodeCurrentFrame, fps))] forKey:NSLocalizedDescriptionKey];
+                NSError *error = [[NSError alloc] initWithDomain:@"VideoEditor" code:2 userInfo:info];
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [delegate videoEditor:self exportFinishWithError:error];
+                });
+            }
+            
+            
+            CVPixelBufferRelease(buffer);
+            
+            [encodingTimer endProcess];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [delegate videoEditor:self progressTo:encodeCurrentFrame / (duration * fps)];
+            });
+            
+            encodeCurrentFrame++;
+            
+            encodePointer++;
+            if (encodePointer > 29) {
+                encodePointer = 0;
+            }
+            
+            if (encodeCurrentFrame >= duration * fps) {
+                [assetWriterVideoInput markAsFinished];
+                
+                isFinishVideo = YES;
+                
+                if (isFinishAudio) {
+                    isProcessing = NO;
+                    [assetWriter endSessionAtSourceTime:CMTimeMakeWithSeconds(duration, fps)];
+                    
+                    [assetWriter finishWritingWithCompletionHandler:^ {
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [delegate videoEditor:self exportFinishWithError:nil];
+                            
+                            NSLog(@"Decoding = %.0f, %.0f", decodingTimer.averageTime, decodingTimer.totalTime);
+                            NSLog(@"Encoding = %.0f, %.0f", encodingTimer.averageTime, encodingTimer.totalTime);
+                            NSLog(@"Converting Image = %.0f, %.0f", convertingImageTimer.averageTime, convertingImageTimer.totalTime);
+                            NSLog(@"Rotate Image = %.0f, %.0f", rotateImageTimer.averageTime, rotateImageTimer.totalTime);
+                            NSLog(@"Draw Image = %.0f, %.0f", drawImageTimer.averageTime, drawImageTimer.totalTime);
+                        });
+                    }];
+                    
+                    break;
+                }
             }
         }
     }];
