@@ -35,8 +35,10 @@
     VETimer *decodingTimer;
     VETimer *encodingTimer;
     VETimer *convertingImageTimer;
-    VETimer *rotateImageTimer;
+    VETimer *rotateVideoTimer;
     VETimer *drawImageTimer;
+    VETimer *createImageTimer;
+    VETimer *rotateImageTimer;
 }
 
 @property (nonatomic, strong) id <VEVideoEditorDelegate> delegate;
@@ -58,8 +60,10 @@
 @property (nonatomic, strong) VETimer *decodingTimer;
 @property (nonatomic, strong) VETimer *encodingTimer;
 @property (nonatomic, strong) VETimer *convertingImageTimer;
-@property (nonatomic, strong) VETimer *rotateImageTimer;
+@property (nonatomic, strong) VETimer *rotateVideoTimer;
 @property (nonatomic, strong) VETimer *drawImageTimer;
+@property (nonatomic, strong) VETimer *createImageTimer;
+@property (nonatomic, strong) VETimer *rotateImageTimer;
 
 - (id)initWithURL:(NSURL *)url;
 - (id)initWithPath:(NSString *)path;

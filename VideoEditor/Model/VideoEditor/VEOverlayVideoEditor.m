@@ -13,6 +13,7 @@
 #import "VEUtilities.h"
 #import "VEVideoTrack.h"
 #import "VEAudioComponent.h"
+#import "VETimer.h"
 
 @implementation VEOverlayVideoEditor
 
@@ -28,6 +29,14 @@
         
         audioComposition.editor = self;
         previewViewController.editor = self;
+        
+        encodingTimer = [[VETimer alloc] init];
+        decodingTimer = [[VETimer alloc] init];
+        convertingImageTimer = [[VETimer alloc] init];
+        rotateVideoTimer = [[VETimer alloc] init];
+        drawImageTimer = [[VETimer alloc] init];
+        createImageTimer = [[VETimer alloc] init];
+        rotateImageTimer = [[VETimer alloc] init];
     }
     
     return self;
@@ -182,17 +191,23 @@
         presentationTime = kCMTimeZero;
         
         while ([assetWriterVideoInput isReadyForMoreMediaData]) {
+            [decodingTimer startProcess];
+            
             while (reader.status != AVAssetReaderStatusReading) {
                 usleep(0.1f);
             }
             
             CMSampleBufferRef sample = [readerOutput copyNextSampleBuffer];
+            [decodingTimer endProcess];
+            
             if (sample) {
                 presentationTime = CMSampleBufferGetPresentationTimeStamp(sample);
+                [createImageTimer startProcess];
                 CGImageRef cgImage = [videoComposition nextFrameImage];
+                [createImageTimer endProcess];
                 
                 /* Composite over video frame */
-                
+                [convertingImageTimer startProcess];
                 CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(sample);
                 
                 // Lock the image buffer
@@ -241,13 +256,16 @@
                 //CGImageRelease(cgImage);
                 
                 /* End composite */
+                [convertingImageTimer endProcess];
                 
+                [encodingTimer startProcess];
                 [assetWriterVideoInput appendSampleBuffer:sample];
                 CFRelease(sample);
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [delegate videoEditor:self progressTo:CMTimeGetSeconds(presentationTime) / duration];
                 });
+                [encodingTimer endProcess];
                 
                 currentFrame++;
 
@@ -263,6 +281,14 @@
                     [assetWriter finishWritingWithCompletionHandler:^ {
                         dispatch_async(dispatch_get_main_queue(), ^{
                             [delegate videoEditor:self exportFinishWithError:nil];
+                            
+                            NSLog(@"Decoding = %.0f, %.0f", decodingTimer.averageTime, decodingTimer.totalTime);
+                            NSLog(@"Encoding = %.0f, %.0f", encodingTimer.averageTime, encodingTimer.totalTime);
+                            NSLog(@"Converting Image = %.0f, %.0f", convertingImageTimer.averageTime, convertingImageTimer.totalTime);
+                            NSLog(@"Rotate Video = %.0f, %.0f", rotateVideoTimer.averageTime, rotateVideoTimer.totalTime);
+                            NSLog(@"Draw Image = %.0f, %.0f", drawImageTimer.averageTime, drawImageTimer.totalTime);
+                            NSLog(@"Create Image = %.0f, %.0f", createImageTimer.averageTime, createImageTimer.totalTime);
+                            NSLog(@"Rotate Image = %.0f, %.0f", rotateImageTimer.averageTime, rotateImageTimer.totalTime);
                         });
                     }];
                 }
