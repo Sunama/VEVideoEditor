@@ -18,7 +18,7 @@
 
 @implementation VEVideoEditor
 
-@synthesize delegate, previewViewController, videoComposition, audioComposition, encode, size, duration, fps, isProcessing, currentFrame, previewTime, assetWriter, decodingTimer, encodingTimer, convertingImageTimer, rotateImageTimer, drawImageTimer;
+@synthesize delegate, previewViewController, videoComposition, audioComposition, encode, size, duration, fps, isProcessing, currentFrame, previewTime, assetWriter, decodingTimer, encodingTimer, convertingImageTimer, rotateImageTimer, drawImageTimer, rotateVideoTimer, createImageTimer;
 
 - (id)init {
     self = [super init];
@@ -35,8 +35,10 @@
         encodingTimer = [[VETimer alloc] init];
         decodingTimer = [[VETimer alloc] init];
         convertingImageTimer = [[VETimer alloc] init];
-        rotateImageTimer = [[VETimer alloc] init];
+        rotateVideoTimer = [[VETimer alloc] init];
         drawImageTimer = [[VETimer alloc] init];
+        createImageTimer = [[VETimer alloc] init];
+        rotateImageTimer = [[VETimer alloc] init];
     }
     
     return self;
@@ -210,8 +212,10 @@
                             NSLog(@"Decoding = %.0f, %.0f", decodingTimer.averageTime, decodingTimer.totalTime);
                             NSLog(@"Encoding = %.0f, %.0f", encodingTimer.averageTime, encodingTimer.totalTime);
                             NSLog(@"Converting Image = %.0f, %.0f", convertingImageTimer.averageTime, convertingImageTimer.totalTime);
-                            NSLog(@"Rotate Image = %.0f, %.0f", rotateImageTimer.averageTime, rotateImageTimer.totalTime);
+                            NSLog(@"Rotate Video = %.0f, %.0f", rotateVideoTimer.averageTime, rotateVideoTimer.totalTime);
                             NSLog(@"Draw Image = %.0f, %.0f", drawImageTimer.averageTime, drawImageTimer.totalTime);
+                            NSLog(@"Create Image = %.0f, %.0f", createImageTimer.averageTime, createImageTimer.totalTime);
+                            NSLog(@"Rotate Image = %.0f, %.0f", rotateImageTimer.averageTime, rotateImageTimer.totalTime);
                         });
                     }];
                 }

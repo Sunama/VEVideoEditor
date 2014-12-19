@@ -11,6 +11,7 @@
 #import "VEOverlayVideoEditor.h"
 #import "VEUtilities.h"
 #import "VEVideoTrack.h"
+#import "VETimer.h"
 
 @implementation VEOverlayVideoComposition
 

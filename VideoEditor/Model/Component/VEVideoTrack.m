@@ -205,7 +205,7 @@
         CFRelease(sample);
         
         [composition.editor.convertingImageTimer endProcess];
-        [composition.editor.rotateImageTimer startProcess];
+        [composition.editor.rotateVideoTimer startProcess];
         
         if (resultOrientation == UIImageOrientationUp) {
             previousImage = [VEUtilities imageByRotatingImage:previousImage fromImageOrientation:UIImageOrientationLeftMirrored];
@@ -220,7 +220,7 @@
             previousImage = [VEUtilities imageByRotatingImage:previousImage fromImageOrientation:UIImageOrientationDownMirrored];
         }
         
-        [composition.editor.rotateImageTimer endProcess];
+        [composition.editor.rotateVideoTimer endProcess];
         
         return CGImageCreateCopy(previousImage);
     }

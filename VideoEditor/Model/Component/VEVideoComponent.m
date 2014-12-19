@@ -10,6 +10,7 @@
 #import "VEVideoComposition.h"
 #import "VEVideoEditor.h"
 #import "VEUtilities.h"
+#import "VETimer.h"
 
 @implementation VEVideoComponent
 
@@ -47,9 +48,12 @@
 
 - (CGImageRef)frameImageAtTime:(double)time {
     if ([self updateAtTime:time] || !previousImage) {
+        [composition.editor.createImageTimer startProcess];
         UIGraphicsBeginImageContext(view.frame.size);
         CGContextRef context = UIGraphicsGetCurrentContext();
+        [composition.editor.createImageTimer endProcess];
         
+        [composition.editor.rotateImageTimer startProcess];
         CGAffineTransform transform = CGAffineTransformMakeTranslation(view.frame.size.width, 0.0);
         transform = CGAffineTransformScale(transform, -1.0, 1.0);
         CGContextScaleCTM(context, -1.0, -1.0);
@@ -59,6 +63,7 @@
         [view.layer renderInContext:context];
         CGImageRef image = CGBitmapContextCreateImage(context);
         UIGraphicsEndImageContext();
+        [composition.editor.rotateImageTimer endProcess];
         
         previousImage = CGImageCreateCopy(image);
         
