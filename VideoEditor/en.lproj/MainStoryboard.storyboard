@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="5056" systemVersion="13D65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="TMT-RG-1qb">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="TMT-RG-1qb">
     <dependencies>
-        <deployment defaultVersion="1552" identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
         <!--Main View Controller-->
@@ -45,6 +46,15 @@
                                 </state>
                                 <connections>
                                     <segue destination="UCU-TE-nwx" kind="modal" id="jro-FC-UJG"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mKl-S6-3Cl">
+                                <rect key="frame" x="111" y="315" width="88" height="30"/>
+                                <state key="normal" title="Performance">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <segue destination="03d-Tg-3vC" kind="modal" id="84h-P9-6pg"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -452,6 +462,41 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="b3v-yl-Uj7" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="580" y="653"/>
+        </scene>
+        <!--Performance View Controller-->
+        <scene sceneID="jQl-Av-a47">
+            <objects>
+                <viewController id="03d-Tg-3vC" customClass="PerformanceViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="xAL-ic-fOS"/>
+                        <viewControllerLayoutGuide type="bottom" id="Sf2-Oh-Bk3"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="A3n-JX-XbR">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" text="Processing" translatesAutoresizingMaskIntoConstraints="NO" id="oEW-5R-ppb">
+                                <rect key="frame" x="0.0" y="20" width="320" height="548"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="oEW-5R-ppb" firstAttribute="top" secondItem="xAL-ic-fOS" secondAttribute="bottom" id="3ww-72-wdp"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="oEW-5R-ppb" secondAttribute="trailing" id="9AB-5s-sSg"/>
+                            <constraint firstItem="Sf2-Oh-Bk3" firstAttribute="top" secondItem="oEW-5R-ppb" secondAttribute="bottom" id="gRh-tO-luD"/>
+                            <constraint firstItem="oEW-5R-ppb" firstAttribute="leading" secondItem="A3n-JX-XbR" secondAttribute="leadingMargin" id="soS-q3-yYM"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="processTextView" destination="oEW-5R-ppb" id="QTe-4Y-zQV"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="tPv-xM-lvo" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="580" y="1319"/>
         </scene>
         <!--Image Adding View Controller-->
         <scene sceneID="OVv-vG-iEV">

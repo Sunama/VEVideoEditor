@@ -15,5 +15,6 @@
 + (NSString *)documentsPath:(NSString *)fileName;
 + (NSURL *)urlBundlePath:(NSString *)fileName;
 + (NSURL *)urlDocumentsPath:(NSString *)fileName;
++ (int)generateRandomNumberWithlowerBound:(int)lowerBound upperBound:(int)upperBound;
 
 @end

@@ -57,4 +57,9 @@
     return [NSURL URLWithString:[NSString stringWithFormat:@"file://%@", [Utilities documentsPath:fileName]]];
 }
 
++ (int)generateRandomNumberWithlowerBound:(int)lowerBound upperBound:(int)upperBound {
+    int rndValue = lowerBound + arc4random() % (upperBound - lowerBound);
+    return rndValue;
+}
+
 @end
