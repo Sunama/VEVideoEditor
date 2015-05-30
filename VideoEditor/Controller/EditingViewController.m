@@ -44,6 +44,7 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
     [videoImageView addSubview:videoEditor.previewViewController.view];
     
     videoEditor.previewViewController.view.frame = CGRectMake(0.0f, 0.0f, videoImageView.frame.size.width, videoImageView.frame.size.height);

@@ -39,6 +39,7 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
     videoEditor.delegate = self;
     startDate = [NSDate date];
     NSString *fileName = [NSString stringWithFormat:@"%.0f.mov", [NSDate timeIntervalSinceReferenceDate]];

@@ -207,15 +207,17 @@
                     
                     [assetWriter finishWritingWithCompletionHandler:^ {
                         dispatch_async(dispatch_get_main_queue(), ^{
+                            NSLog(@"\n%.0f\n%.0f\n%.0f\n%.0f\n%.0f\n%.0f\n%.0f", decodingTimer.totalTime, convertingImageTimer.totalTime, rotateVideoTimer.totalTime, createImageTimer.totalTime, rotateImageTimer.totalTime, drawImageTimer.totalTime, encodingTimer.totalTime);
+                            
                             [delegate videoEditor:self exportFinishWithError:nil];
                             
                             NSLog(@"Decoding = %.0f, %.0f", decodingTimer.averageTime, decodingTimer.totalTime);
-                            NSLog(@"Encoding = %.0f, %.0f", encodingTimer.averageTime, encodingTimer.totalTime);
                             NSLog(@"Converting Image = %.0f, %.0f", convertingImageTimer.averageTime, convertingImageTimer.totalTime);
                             NSLog(@"Rotate Video = %.0f, %.0f", rotateVideoTimer.averageTime, rotateVideoTimer.totalTime);
-                            NSLog(@"Draw Image = %.0f, %.0f", drawImageTimer.averageTime, drawImageTimer.totalTime);
                             NSLog(@"Create Image = %.0f, %.0f", createImageTimer.averageTime, createImageTimer.totalTime);
                             NSLog(@"Rotate Image = %.0f, %.0f", rotateImageTimer.averageTime, rotateImageTimer.totalTime);
+                            NSLog(@"Draw Image = %.0f, %.0f", drawImageTimer.averageTime, drawImageTimer.totalTime);
+                            NSLog(@"Encoding = %.0f, %.0f", encodingTimer.averageTime, encodingTimer.totalTime);
                         });
                     }];
                 }
@@ -421,10 +423,12 @@
                             [delegate videoEditor:self exportFinishWithError:nil];
                             
                             NSLog(@"Decoding = %.0f, %.0f", decodingTimer.averageTime, decodingTimer.totalTime);
-                            NSLog(@"Encoding = %.0f, %.0f", encodingTimer.averageTime, encodingTimer.totalTime);
                             NSLog(@"Converting Image = %.0f, %.0f", convertingImageTimer.averageTime, convertingImageTimer.totalTime);
+                            NSLog(@"Rotate Video = %.0f, %.0f", rotateVideoTimer.averageTime, rotateVideoTimer.totalTime);
+                            NSLog(@"Create Image = %.0f, %.0f", createImageTimer.averageTime, createImageTimer.totalTime);
                             NSLog(@"Rotate Image = %.0f, %.0f", rotateImageTimer.averageTime, rotateImageTimer.totalTime);
                             NSLog(@"Draw Image = %.0f, %.0f", drawImageTimer.averageTime, drawImageTimer.totalTime);
+                            NSLog(@"Encoding = %.0f, %.0f", encodingTimer.averageTime, encodingTimer.totalTime);
                         });
                     }];
                     

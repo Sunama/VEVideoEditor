@@ -44,6 +44,7 @@
 		E713179E195FD78F00898FA4 /* CoreImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E713179D195FD78F00898FA4 /* CoreImage.framework */; };
 		E718897F19603FDB0089907E /* VETimer.m in Sources */ = {isa = PBXBuildFile; fileRef = E718897E19603FDB0089907E /* VETimer.m */; };
 		E76FBD151A4402F60074F049 /* PerformanceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E76FBD141A4402F60074F049 /* PerformanceViewController.m */; };
+		E7F64A341A7790E400E45DF8 /* IMG_0275.MOV in Resources */ = {isa = PBXBuildFile; fileRef = E7F64A331A7790E400E45DF8 /* IMG_0275.MOV */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -111,6 +112,7 @@
 		E718897E19603FDB0089907E /* VETimer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VETimer.m; sourceTree = "<group>"; };
 		E76FBD131A4402F60074F049 /* PerformanceViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PerformanceViewController.h; sourceTree = "<group>"; };
 		E76FBD141A4402F60074F049 /* PerformanceViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PerformanceViewController.m; sourceTree = "<group>"; };
+		E7F64A331A7790E400E45DF8 /* IMG_0275.MOV */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = IMG_0275.MOV; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -272,6 +274,7 @@
 		884CC595171FA85C0097A46E /* VideoEditor */ = {
 			isa = PBXGroup;
 			children = (
+				E7F64A331A7790E400E45DF8 /* IMG_0275.MOV */,
 				045DC5A0178FBAB600CCAE18 /* Other */,
 				046D29F8178E745800912AC1 /* Model */,
 				046D2A1F178E768B00912AC1 /* Controller */,
@@ -352,6 +355,7 @@
 			files = (
 				884CC59A171FA85C0097A46E /* InfoPlist.strings in Resources */,
 				884CC5A2171FA85D0097A46E /* Default.png in Resources */,
+				E7F64A341A7790E400E45DF8 /* IMG_0275.MOV in Resources */,
 				884CC5A4171FA85D0097A46E /* Default@2x.png in Resources */,
 				884CC5A6171FA85D0097A46E /* Default-568h@2x.png in Resources */,
 				884CC5A9171FA85D0097A46E /* MainStoryboard.storyboard in Resources */,

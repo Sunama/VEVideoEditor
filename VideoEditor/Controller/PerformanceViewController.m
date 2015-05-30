@@ -18,7 +18,7 @@
 
 @implementation PerformanceViewController
 
-@synthesize videoEditor;
+//@synthesize videoEditor;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -31,8 +31,14 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-    samplePaths = [NSMutableArray array];
+    [super viewDidAppear:animated];
     
+    samplePaths = [NSMutableArray array];
+    samplePath = [Utilities bundlePath:@"IMG_0275.MOV"];
+    
+    experiments = 1;
+    method = 0;
+    sample = 1;
     
     [self loadExperiment];
 }
@@ -51,13 +57,24 @@
 #pragma mark Experiment
 
 - (void)loadExperiment {
+    [videoEditor dispose];
+    videoEditor = nil;
     if (experiments == 0) {
-        if (method == 0)
-            videoEditor = [[VEVideoEditor alloc] initWithPath:[Utilities bundlePath:[samplePaths objectAtIndex:sample]]];
+        //NSString *path = [Utilities bundlePath:[samplePaths objectAtIndex:sample]];
+        NSString *path = samplePath;
+        if (method == 0) {
+            videoEditor = [[VEVideoEditor alloc] initWithPath:path];
+            ((VEVideoTrack *)[videoEditor.videoComposition.components objectAtIndex:0]).duration = sample;
+        }
         else
-            videoEditor = [[VEOverlayVideoEditor alloc] initWithPath:[Utilities bundlePath:[samplePaths objectAtIndex:sample]]];
+            videoEditor = [[VEOverlayVideoEditor alloc] initWithPath:path];
         
-        sample++;
+        //sample++;
+        videoEditor.duration = sample;
+        
+        for (int i = 0; i < 5; i++) {
+            [self randText];
+        }
         
         if (sample == 30) {
             experiments = 1;
@@ -65,21 +82,17 @@
         }
     }
     else if (experiments == 1) {
-        if (method == 0)
-            videoEditor = [[VEVideoEditor alloc] initWithPath:[Utilities bundlePath:[samplePaths objectAtIndex:1]]];
+        if (method == 0) {
+            videoEditor = [[VEVideoEditor alloc] initWithPath:samplePath];
+            ((VEVideoTrack *)[videoEditor.videoComposition.components objectAtIndex:0]).duration = sample;
+        }
         else
-            videoEditor = [[VEOverlayVideoEditor alloc] initWithPath:[Utilities bundlePath:[samplePaths objectAtIndex:sample]]];
+            videoEditor = [[VEOverlayVideoEditor alloc] initWithPath:samplePath];
+
+        videoEditor.duration = 10.0f;
         
-        sample ++;
-        
-        if (sample == 30) {
-            if (method == 0) {
-                experiments = 0;
-                sample = 0;
-            }
-            else {
-                return;
-            }
+        for (int i = 0; i < sample; i++) {
+            [self randText];
         }
     }
     
@@ -122,23 +135,25 @@
     NSString *message;
     
     if (error) {
-        NSString *message = [NSString stringWithFormat:@"Error to export video with reason: %@", error];
+        message = [NSString stringWithFormat:@"Error to export video with reason: %@", error];
     }
     else {
         float time = [startDate timeIntervalSinceNow] * -1000.0;
         
-        NSString *message = [NSString stringWithFormat:@"Experiments #%d, sample %d, Export finished with time: %.0f ms\nVideo Size: %.0f x %.0f\nUsed Memory: %.4f mb\nFree Memory: %.4f mb", experiments, sample, time, videoEditor.size.width, videoEditor.size.height, sumUsedMemory / samplingTime, [self get_free_memory] / (1024.0f * 1024.0f)];
+        message = [NSString stringWithFormat:@"Experiments #%d, sample %d, Export finished with time: %.0f ms\nVideo Size: %.0f x %.0f\nUsed Memory: %.4f mb\nFree Memory: %.4f mb", experiments, sample, time, videoEditor.size.width, videoEditor.size.height, sumUsedMemory / samplingTime, [self get_free_memory] / (1024.0f * 1024.0f)];
+        NSLog(@"\n%.0f\n\n%.4f", time, sumUsedMemory / samplingTime);
     }
     
     processTextView.text = [NSString stringWithFormat:@"%@ \n%@", processTextView.text, message];
     
-    [self loadExperiment];
+    //[self loadExperiment];
 }
 
 - (void)videoEditor:(VEVideoEditor *)videoEditor progressTo:(double)progress {
     //[memories addObject:[NSNumber numberWithFloat:[self usedMemory] / (1024.0f * 1024.0f)]];
     sumUsedMemory += [self usedMemory] / (1024.0f * 1024.0f);
     samplingTime++;
+    NSLog(@"%.2f%%", progress * 100);
 }
 
 - (natural_t)get_free_memory {

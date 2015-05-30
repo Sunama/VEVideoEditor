@@ -3,6 +3,8 @@ VEVideoEditor
 
 Video Editor for iOS based from AV Foundation Framework.
 
+This project is thesis of Computer & Telecommunication Engineering of Dhurakij Pandit University (Thailand)
+
 Features
   * Add image layer to video
   * Merge multiple video

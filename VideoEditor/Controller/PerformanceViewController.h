@@ -24,8 +24,9 @@
     int method;
     
     NSMutableArray *samplePaths;
+    NSString *samplePath;
 }
 
-@property (nonatomic, retain) VEVideoEditor *videoEditor;
+//@property (nonatomic, strong) VEVideoEditor *videoEditor;
 
 @end

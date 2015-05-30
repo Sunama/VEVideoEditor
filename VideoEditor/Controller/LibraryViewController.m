@@ -44,6 +44,8 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
     [videoTableView reloadData];
 }
 
