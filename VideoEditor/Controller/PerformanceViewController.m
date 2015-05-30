@@ -37,8 +37,8 @@
     samplePath = [Utilities bundlePath:@"IMG_0275.MOV"];
     
     experiments = 1;
-    method = 0;
-    sample = 1;
+    method = 1;
+    sample = 30;
     
     [self loadExperiment];
 }
@@ -84,7 +84,7 @@
     else if (experiments == 1) {
         if (method == 0) {
             videoEditor = [[VEVideoEditor alloc] initWithPath:samplePath];
-            ((VEVideoTrack *)[videoEditor.videoComposition.components objectAtIndex:0]).duration = sample;
+            ((VEVideoTrack *)[videoEditor.videoComposition.components objectAtIndex:0]).duration = 10.0f;
         }
         else
             videoEditor = [[VEOverlayVideoEditor alloc] initWithPath:samplePath];
